@@ -3,10 +3,16 @@ import os
 import psycopg2
 import hashlib
 
-class PostgresHandler(script_path=None):
-    def __init__(self, script_path):
-        super().__init__()
+class PostgresHandler:
+    _instance = None
 
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(PostgresHandler, cls).__new__(cls)
+            cls._initialize(cls._instance)
+        return cls._instance
+
+    def _initialize(cls, instance):
         # Get connection info
         dbname = os.getenv("PG_NAME", "postgres")
         user = os.getenv("PG_USER", "postgres")
@@ -15,15 +21,17 @@ class PostgresHandler(script_path=None):
         port = os.getenv("PG_PORT", 5432)
 
         # Connect to PG
-        self.dsn = f"dbname={dbname} user={user} password={password} host={host} port={port}"
-        self.conn = psycopg2.connect(self.dsn)
-        self.cursor = self.conn.cursor()
+        instance.dsn = f"dbname={dbname} user={user} password={password} host={host} port={port}"
+        instance.conn = psycopg2.connect(self.dsn)
+        instance.cursor = self.conn.cursor()
 
         # Create pg_scripts if not exists
-        self._check_pg_script()
+        instance._check_pg_script()
 
-        if script_dir:
-            self.run_scripts(script_path)
+        pg_script_directory = os.getenv("PG_SCRIPT_DIRECTORY")
+
+        if pg_script_directory:
+            run_scripts(pg_script_directory)
 
     # Execute arbitrary sql file and save record to pg_scripts
     def execute_sql_file(self, sql_file_path, skip_hash_check=False):
@@ -91,9 +99,12 @@ class PostgresHandler(script_path=None):
         exists = self.cursor.fetchone()[0]
 
         if not exists:
-            self.execute_sql_file(os.path.join(os.path.dirname(__file__), "..", "pg_scripts", "000__Create_pg_scripts.sql"), skip_hash_check=True)
+            self.execute_sql_file(os.path.join(os.path.dirname(__file__), "pg_scripts", "000__Create_pg_scripts.sql"), skip_hash_check=True)
 
     def close(self):
         self.cursor.close()
         self.conn.close()
         super().close()
+
+    def get_cursor(self):
+        return self.cursor
