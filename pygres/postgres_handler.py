@@ -23,8 +23,8 @@ class PostgresHandler:
 
         # Connect to PG
         instance.dsn = f"dbname={dbname} user={user} password={password} host={host} port={port}"
-        instance.conn = psycopg2.connect(self.dsn)
-        instance.cursor = self.conn.cursor()
+        instance.conn = psycopg2.connect(instance.dsn)
+        instance.cursor = instance.conn.cursor()
 
         # Create pg_scripts if not exists
         instance._check_pg_script()
