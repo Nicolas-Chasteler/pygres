@@ -37,9 +37,11 @@ class PostgresHandler:
     # Execute arbitrary sql file and save record to pg_scripts
     def execute_sql_file(self, sql_file_path, skip_hash_check=False):
         # Open sql file
+        file_name = os.path.basename(sql_file_path)
         with open(sql_file_path, 'r') as file:
             sql_content = file.read()
 
+        # Calculate hash of sql file
         hash_func = hashlib.new('md5')
         hash_func.update(sql_content.encode('utf-8'))
         file_hash = hash_func.hexdigest()
@@ -67,7 +69,6 @@ class PostgresHandler:
         self.conn.commit()
 
         # Prepare to insert record into pg_scripts
-        file_name = os.path.basename(sql_file_path)
         script_id = int(file_name.split("__")[0])  # Extract the numeric ID
 
         insert_query = """
