@@ -32,7 +32,7 @@ class PostgresHandler:
         # Run pg_scripts in directory based on environmental variable
         pg_script_directory = os.getenv("PG_SCRIPT_DIRECTORY")
         if pg_script_directory:
-            run_scripts(pg_script_directory)
+            instance.run_scripts(pg_script_directory)
 
     # Execute arbitrary sql file and save record to pg_scripts
     def execute_sql_file(self, sql_file_path, skip_hash_check=False):
