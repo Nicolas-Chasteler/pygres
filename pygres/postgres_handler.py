@@ -54,7 +54,7 @@ class PostgresHandler:
             WHERE file_name = %s
             );
             """
-            self.cursor.execute(check_query, (file_name,))
+            self.cursor.execute(hash_check_query, (file_name,))
             executed_hash = self.cursor.fetchone()
 
             # Throw error if previously run file hash isn't equal to new file hash
