@@ -12,6 +12,7 @@ class PostgresHandler:
             cls._initialize(cls._instance)
         return cls._instance
 
+    @classmethod
     def _initialize(cls, instance):
         # Get connection info
         dbname = os.getenv("PG_NAME", "postgres")
