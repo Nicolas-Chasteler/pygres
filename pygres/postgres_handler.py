@@ -29,8 +29,8 @@ class PostgresHandler:
         # Create pg_scripts if not exists
         instance._check_pg_script()
 
+        # Run pg_scripts in directory based on environmental variable
         pg_script_directory = os.getenv("PG_SCRIPT_DIRECTORY")
-
         if pg_script_directory:
             run_scripts(pg_script_directory)
 
@@ -41,7 +41,7 @@ class PostgresHandler:
             sql_content = file.read()
 
         hash_func = hashlib.new('md5')
-        hash_func.update(sql_content)
+        hash_func.update(sql_content.encode('utf-8'))
         file_hash = hash_func.hexdigest()
 
         # Check the hash of the file against the pg_scripts table
