@@ -59,8 +59,12 @@ class PostgresHandler:
             executed_hash = self.cursor.fetchone()
 
             # Throw error if previously run file hash isn't equal to new file hash
-            if executed_hash and executed_hash[0] != file_hash:
-                raise HashMismatchError(executed_hash, file_hash)
+            if executed_hash:
+                if executed_hash[0] != file_hash:
+                    raise HashMismatchError(executed_hash, file_hash)
+                # Return if file has already been run and hash is equal
+                else:
+                    return
 
 
         # Execute the SQL file
