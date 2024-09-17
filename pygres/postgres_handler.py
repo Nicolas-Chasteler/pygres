@@ -53,8 +53,7 @@ class PostgresHandler:
             hash_check_query = """
             SELECT hash
             FROM pg_scripts
-            WHERE file_name = %s
-            );
+            WHERE file_name = %s;
             """
             self.cursor.execute(hash_check_query, (file_name,))
             executed_hash = self.cursor.fetchone()
